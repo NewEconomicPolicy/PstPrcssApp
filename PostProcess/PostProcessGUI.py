@@ -157,15 +157,21 @@ class Form(QWidget):
         self.w_aggreg = w_aggreg
 
         # ========== spacer
-        irow += 3
+        irow += 2
         lbl13s = QLabel()
         grid.addWidget(lbl13s, irow, 0)
 
         # Operations
         # ==========
         irow += 1
+        w_lbl09 = QLabel('Operations')
+        w_lbl09.setAlignment(Qt.AlignCenter)
+        w_lbl09.setToolTip('Each operation applies to selected simulation only')
+        grid.addWidget(w_lbl09, irow, 0)
+
+        irow += 1
         icol = 0
-        w_lbl10 = QLabel('Unique operations:')
+        w_lbl10 = QLabel('Unique:')
         w_lbl10.setAlignment(Qt.AlignRight)
         w_lbl10.setToolTip('Each operation applies to selected simulation only')
         grid.addWidget(w_lbl10, irow, icol)
@@ -199,7 +205,7 @@ class Form(QWidget):
         # =======
         irow += 1
         icol = 0
-        w_lbl11 = QLabel('General operations:')
+        w_lbl11 = QLabel('General:')
         w_lbl11.setAlignment(Qt.AlignRight)
         w_lbl11.setToolTip('Each operation applies to selected simulation only')
         grid.addWidget(w_lbl11, irow, icol)
@@ -235,9 +241,9 @@ class Form(QWidget):
         # =======
         irow += 1
         icol = 0
-        w_lbl14 = QLabel('SV operations:')
+        w_lbl14 = QLabel('Soils-R-GGREAT SV:')
         w_lbl14.setAlignment(Qt.AlignRight)
-        w_lbl14.setToolTip('SV operations')
+        w_lbl14.setToolTip('SV')
         grid.addWidget(w_lbl14, irow, icol)
 
         icol += 2
@@ -250,7 +256,7 @@ class Form(QWidget):
         self.w_cut_csv = w_cut_csv
 
         icol += 1
-        w_prcss_all = QPushButton('SV Process all', self)
+        w_prcss_all = QPushButton('Process all', self)
         helpText = 'Aggregate to CSV then calculate Net CO2e and write to a raw,\n' + \
                    'that is a non-COARDS compliant, NetCDF file for all related simulations'
         w_prcss_all.setToolTip(helpText)
@@ -270,7 +276,7 @@ class Form(QWidget):
         # =======
         irow += 1
         icol = 0
-        w_lbl12 = QLabel('MK operations:')
+        w_lbl12 = QLabel('Verify MK:')
         w_lbl12.setAlignment(Qt.AlignRight)
         w_lbl12.setToolTip('MK operations')
         grid.addWidget(w_lbl12, irow, icol)
@@ -310,7 +316,7 @@ class Form(QWidget):
         # ======
         irow += 1
         icol = 0
-        w_lbl13 = QLabel('MA operations:')
+        w_lbl13 = QLabel('Super-G MA:')
         w_lbl13.setAlignment(Qt.AlignRight)
         w_lbl13.setToolTip('MA operations')
         grid.addWidget(w_lbl13, irow, icol)
@@ -334,7 +340,7 @@ class Form(QWidget):
         self.w_cut_csv160 = w_cut_csv160
 
         icol += 1
-        w_ma_prcss = QPushButton('MA process all', self)
+        w_ma_prcss = QPushButton('Process all', self)
         helpText = 'Aggregate to CSV then calculate Net CO2e and write to a raw,\n' + \
                    'that is a non-COARDS compliant, NetCDF file for all related simulations'
         w_ma_prcss.setToolTip(helpText)
@@ -345,9 +351,9 @@ class Form(QWidget):
         # ==========
         irow += 1
         icol = 0
-        w_lbl13 = QLabel('Management operations:')
+        w_lbl13 = QLabel('Management SV:')
         w_lbl13.setAlignment(Qt.AlignRight)
-        w_lbl13.setToolTip('MA operations')
+        w_lbl13.setToolTip('SV operations')
         grid.addWidget(w_lbl13, irow, icol)
 
         icol += 1
