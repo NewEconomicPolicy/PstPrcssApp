@@ -1,0 +1,67 @@
+aggregate_rslts_to_csv.py:29:def map_sims_weather(form):
+aggregate_rslts_to_csv.py:109:    def __init__(self, form):
+aggregate_rslts_to_csv.py:139:    def create_results_files(self):
+aggregate_rslts_to_csv.py:166:    def create_soil_results_file(self):
+aggregate_rslts_to_csv.py:186:    def process_soil_result(self, scenario, sim_dir, result, iyear, plant_input):
+aggregate_rslts_to_csv.py:216:    def process_results(self, scenario, sim_dir, results, expand_results):
+aggregate_rslts_to_csv.py:300:def aggregate_soil_data_to_csv(form):
+aggregate_rslts_to_csv.py:387:def aggregate_metrics_to_csv(form, expand_results = False):
+
+create_coards_ncs.py:27:def _generate_yearly_atimes(fut_start_year, num_years, main_var_defns):
+create_coards_ncs.py:55:def _generate_mnthly_atimes(fut_start_year, num_months):
+create_coards_ncs.py:87:def create_coard_ncs(form, metric_obj):
+create_coards_ncs.py:226:    def __init__(self, metric, file_list, land_use, out_dir, study, delete_flag = True):
+
+netcdf_npp_fns.py:27:def _generate_yearly_atimes(fut_start_year, num_years):
+netcdf_npp_fns.py:55:def _generate_mnthly_atimes(fut_start_year, num_months):
+netcdf_npp_fns.py:87:def create_npp_ncs(form, metrics, crop_names, land_use, out_dir, study):
+
+csv_to_coard_nc.py:45:def csv_to_coards_nc(form):
+csv_to_coard_nc.py:78:def _generate_nc(form, metric_obj, daily_flag):
+csv_to_coard_nc.py:179:def _rescale_metric_values(num_months, metric_vals, crop_name, metric, daily_flag):
+
+csv_to_raw_nc.py:43:def _update_progress(last_time, metric, cell_id):
+csv_to_raw_nc.py:55:def csv_to_raw_nc(form):
+csv_to_raw_nc.py:179:def _write_csv_file(nc_gra, nc_gra2ara, yield_level, scensario, max_cell_id):
+csv_to_raw_nc.py:283:def write_csvs_from_ncs(form):
+
+generate_npp_nc.py:47:def _miami_dyce(land_use, temp, precip):
+generate_npp_nc.py:70:def sims_results_to_nc(form):
+
+input_output_funcs.py:37:def create_results_dir(form):
+input_output_funcs.py:56:def ecosse_simulations_files(sims_dir):
+input_output_funcs.py:84:def _check_study_defn(study_defn_fn, study_defn, land_use):
+input_output_funcs.py:113:def read_study_definition(form):
+input_output_funcs.py:149:def open_file_sets(trans_files, crop_name = 'dummy', remove_flag = True):
+input_output_funcs.py:172:def ecosse_results_files(dir_name, descriptor_prefix):
+input_output_funcs.py:235:def read_one_line(file_objs):
+
+nc_low_level_fns.py:25:def get_nc_coords(form, latitude, longitude, max_lat_indx, max_lon_indx):
+
+netcdf_funcs.py:26:def create_nc_file(form, metrics, soil_metrics):
+
+netcdf_npp_fns.py:27:def _generate_yearly_atimes(fut_start_year, num_years):
+netcdf_npp_fns.py:55:def _generate_mnthly_atimes(fut_start_year, num_months):
+netcdf_npp_fns.py:87:def create_npp_ncs(form, metrics, crop_names, land_use, out_dir, study):
+
+PostProcessGUI.py:29:    def __init__(self, parent=None):
+PostProcessGUI.py:169:    def writeNppClicked(self):
+PostProcessGUI.py:174:    def aggregateToCsvClicked(self):
+PostProcessGUI.py:185:    def csvDataToNcClicked(self):
+PostProcessGUI.py:192:    def writeCoardsNcClicked(self):
+PostProcessGUI.py:197:    def fetchSimsDir(self):
+PostProcessGUI.py:208:    def fetchRsltsDir(self):
+PostProcessGUI.py:223:    def exitClicked(self):
+PostProcessGUI.py:228:def main():
+
+spec_utilities.py:31:def read_excel_file(form):
+spec_utilities.py:63:def make_id_mod(id_, latitude, area_grid_cell, gran_lon):
+spec_utilities.py:73:def deconstruct_sim_dir(sim_dir, scenario, land_use):
+spec_utilities.py:92:def _get_summary_out(folder):
+spec_utilities.py:116:def retrieve_soil_results(sim_dir, failed):
+spec_utilities.py:169:def retrieve_results(form, sim_dir, failed):
+spec_utilities.py:194:def load_manifest(lgr, sim_dir):
+spec_utilities.py:216:def update_progress_post(last_time, start_time, num_grid_cells, num_manifests, skipped, failed, warning_count):
+spec_utilities.py:242:def _within_times(dt, starthour, startminute, endhour, endminute):
+spec_utilities.py:256:def _seconds2hms(seconds):
+spec_utilities.py:266:def display_headers(form):
