@@ -1,1 +1,1 @@
-# PstPrcssApp enbles Global Ecosse post processing
+# PstPrcssApp enables Global Ecosse post processing
