@@ -282,12 +282,12 @@ def retrieve_results(lggr, sim_dir):
         try:
             next(reader)  # Skip the units description line
         except StopIteration as err:
-            print('Check: ' + path + ' is empty')
+            print('\nCheck: ' + path + ' is empty')
             return None
         try:
             columns = next(reader)
         except StopIteration as err:
-            print('Check: ' + path + ' is empty')
+            print('\nCheck: ' + path + ' is empty')
             return None
         
         for column in columns:
