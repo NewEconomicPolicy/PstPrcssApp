@@ -267,6 +267,30 @@ def retrieve_soil_results(sim_dir, failed):
 
     return soil_parms, iyear, plant_input
 
+def _make_mapping_dict(columns):
+    """
+    return dictionary to map required SUMMARY.OUT metrics
+    this func overcomes failure when processing legacy ECOSSE SUMMARY.OUT files, namely version 6_2c or earlier
+    sv_name = short variable name; lv_name = long
+    """
+    nrequired = len(SUMMARY_VARNAMES)
+    smmry_vars_dict = {}
+    smmry_vars_lgcy_dict = {}
+    for sv_name, lv_name in SUMMARY_VARNAMES.items():
+        if lv_name in columns:
+            smmry_vars_dict[sv_name] = lv_name
+        elif lv_name.lower() in columns:
+            smmry_vars_lgcy_dict[sv_name] = lv_name.lower()
+
+    if len(smmry_vars_dict) == nrequired:
+        return smmry_vars_dict
+    elif len(smmry_vars_lgcy_dict) == nrequired:
+        return smmry_vars_lgcy_dict
+    else:
+        return None
+
+    return
+
 def retrieve_results(lggr, sim_dir):
     """
     extract necessary results from the completed simulation's output file
@@ -288,6 +312,13 @@ def retrieve_results(lggr, sim_dir):
             columns = next(reader)
         except StopIteration as err:
             print('\nCheck: ' + path + ' is empty')
+            return None
+
+        # identify Ecosse version
+        # =======================
+        smmry_vars_dict = _make_mapping_dict(columns)
+        if smmry_vars_dict is None:
+            print('SUMMARY.OUT file: ' + path + ' not recognised')
             return None
         
         for column in columns:
@@ -312,9 +343,8 @@ def retrieve_results(lggr, sim_dir):
     # build result
     # ============
     full_result = {}
-    for sv_name, lv_name in SUMMARY_VARNAMES.items():
-        if lv_name in summary:
-            full_result[sv_name] = list(summary[lv_name])    # sv_name = short variable name; lv_name = long
+    for sv_name, lv_name in smmry_vars_dict.items():
+        full_result[sv_name] = list(summary[lv_name])    # sv_name = short variable name; lv_name = long
 
     if len(full_result) == 0:
         full_result = None

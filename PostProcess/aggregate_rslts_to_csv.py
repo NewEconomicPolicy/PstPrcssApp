@@ -118,8 +118,8 @@ def aggreg_metrics_to_csv(form, sims_dir = None, expand_results = False):
                 total_area += area
                 num_grid_cells += 1
 
-            # initialise results list with ten disctionary elements, the first as a counter then one for each dominant soil
-            # =============================================================================================================
+            # initialise results list with ten dictionary elements, the first as a counter then one for each dominant soil
+            # ============================================================================================================
             results = [{} for x in range(MAX_NUM_DOM_SOILS + 1)]
             results[0] = 0  # counts number of valid results
 
