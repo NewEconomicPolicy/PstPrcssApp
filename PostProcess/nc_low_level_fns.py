@@ -74,11 +74,12 @@ def get_nc_coords(form, latitude, longitude, max_lat_indx, max_lon_indx):
     """
 
     """
+    NUDGE = 0.001   # avoids anomaly whereby round(48.5) and round(47.5) both give 48
     ll_lon, ll_lat, ur_lon, ur_lat = form.bbox_nc
     resol = form.study_defn['resolution']
 
-    lat_indx = round((latitude  - ll_lat)/resol)
-    lon_indx = round((longitude - ll_lon)/resol)
+    lat_indx = round((latitude - ll_lat - NUDGE)/resol)
+    lon_indx = round((longitude - ll_lon - NUDGE)/resol)
 
     if lat_indx < 0 or lat_indx > max_lat_indx:
         print()
