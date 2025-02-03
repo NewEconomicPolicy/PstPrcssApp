@@ -72,6 +72,7 @@ def create_raw_nc_dset(form, metrics, soil_metrics):
     years = arange(form.study_defn['futStrtYr'], form.study_defn['futEndYr'] + 1)
     nyears = len(years)
     atimes = arange(form.trans_defn['nfields'] + 2)  # expect 1092 for 91 years plus 2 extras for 40 and 90 year differences
+    atimes_yrs = arange(nyears)
 
     # construct the output file name and delete if it already exists
     # ==============================================================
@@ -107,6 +108,7 @@ def create_raw_nc_dset(form, metrics, soil_metrics):
     nc_dset.createDimension('lat', num_alats)
     nc_dset.createDimension('lon', num_alons)
     nc_dset.createDimension('time', len(atimes))
+    nc_dset.createDimension('time_yrs', len(atimes_yrs))
 
     # create the variable (4 byte float in this case)
     # to create a netCDF variable, use the createVariable method of a Dataset (or Group) instance.
@@ -123,10 +125,13 @@ def create_raw_nc_dset(form, metrics, soil_metrics):
     lons.long_name = 'longitude'
     lons[:] = alons
 
-    # TODO: check these
     times = nc_dset.createVariable('time','i2',('time',))
     times.units = 'months from January {} - {} years'.format(form.study_defn['futStrtYr'], nyears)
     times[:] = atimes
+
+    time_yrs = nc_dset.createVariable('time_yrs','i2',('time_yrs',))
+    time_yrs.units = 'years from {} - {} years'.format(form.study_defn['futStrtYr'], nyears)
+    time_yrs[:] = atimes_yrs
 
     # create the area variable
     # ========================
@@ -151,6 +156,12 @@ def create_raw_nc_dset(form, metrics, soil_metrics):
     # =========================================================
     for var_name in metrics:
         var_varia = nc_dset.createVariable(var_name,'f4',('lat','lon','time'), fill_value = missing_value)
+        var_varia.units = 'kg/hectare'
+        var_varia.missing_value = missing_value
+
+    for var_name in metrics:
+        var_name_yrs = var_name + '_yrs'
+        var_varia = nc_dset.createVariable(var_name_yrs, 'f4', ('lat', 'lon', 'time_yrs'), fill_value=missing_value)
         var_varia.units = 'kg/hectare'
         var_varia.missing_value = missing_value
 
