@@ -12,7 +12,6 @@ __prog__ = 'csv_to_raw_nc.py'
 __version__ = '0.0.1'
 __author__ = 's03mm5'
 
-
 from locale import format_string
 from time import time
 from netCDF4 import Dataset
@@ -35,17 +34,39 @@ out_delim = '\t'
 out_delim = ','
 line_length = 79
 
-def _update_progress(last_time, metric, cell_id):
-        """ Update progress bar """
-        if time() - last_time > sleepTime:
-            line = ('\rCompleted {} cells for {} metric'.format(cell_id, metric))
-            len_line = len(line)
-            padding = ' ' * (line_length - len_line)
-            line += padding
-            stdout.write(line)
-            last_time = time()
+WARNING_STR = '*** Warning *** '
+ERROR_STR = '*** Error *** '
 
-        return last_time
+def _add_annual_variable(lgr, nc_dset, metric, lat_indx, lon_indx, nyears, nvals, atom_rec):
+    """
+    C
+    """
+    if metric not in METRICS or metric == 'npp':
+        return
+
+    varname = metric + '_yrs'
+
+    out_rec = []
+    indx1 = 0
+    for nyr in range(nyears):
+        indx2 = indx1 + 12
+        vals = atom_rec[indx1:indx2]
+        indx1 = indx2
+
+        if metric == 'soc':
+            this_val = sum(vals) / 12
+        else:
+            this_val = sum(vals)
+
+        out_rec.append(this_val)
+
+    try:
+        nc_dset.variables[varname][lat_indx, lon_indx, :] = out_rec
+    except (IndexError, ValueError, RuntimeError) as err:
+        _write_err_mess(lgr, err, nvals, varname, lat_indx, lon_indx)
+        return -1
+
+    return
 
 def csv_to_raw_netcdf(form):
     """
@@ -57,7 +78,7 @@ def csv_to_raw_netcdf(form):
     try:
         nc_dset = Dataset(nc_fname,'a', format='NETCDF4')
     except TypeError as err:
-        print('Unable to open output file. {}'.format(err))
+        print(ERROR_STR + 'Unable to open output file. {}'.format(err))
         return
 
     trans_files = form.trans_defn['file_list']     # Files comprising the LU transition result
@@ -123,6 +144,10 @@ def csv_to_raw_netcdf(form):
                     continue
 
                 nvals = len(atom_tran[varname])
+                nyears = nvals // 12
+                if nvals % 12 != 0 and nline == 1:
+                    print(WARNING_STR + 'Number of months {} should be divisable by 12'.format(nvals))
+
                 if varname == 'soil':
 
                     for indx, metric in enumerate(SOIL_METRICS):
@@ -135,11 +160,12 @@ def csv_to_raw_netcdf(form):
                     try:
                         nc_dset.variables[varname][lat_indx, lon_indx, :nvals] = atom_rec
                     except (IndexError, ValueError, RuntimeError) as err:
-                        mess = '\nError {}\tCould not write {} values for metric {} at lat/lon indexes: {} {}'\
-                                                            .format(err, nvals, varname, lat_indx, lon_indx)
-                        form.lgr.critical(mess)
-                        print(mess)
+                        _write_err_mess(form.lgr, err, nvals, varname, lat_indx, lon_indx)
                         return -1
+
+                    # add annual values
+                    # =================
+                    _add_annual_variable(form.lgr, nc_dset, varname, lat_indx, lon_indx, nyears, nvals, atom_rec)
 
                     # Borneo addition: take difference between December of first year and last value
                     # ===============
@@ -173,3 +199,27 @@ def csv_to_raw_netcdf(form):
 
     return
 
+def _update_progress(last_time, metric, cell_id):
+    """
+    Update progress bar
+    """
+    if time() - last_time > sleepTime:
+        line = ('\rCompleted {} cells for {} metric'.format(cell_id, metric))
+        len_line = len(line)
+        padding = ' ' * (line_length - len_line)
+        line += padding
+        stdout.write(line)
+        last_time = time()
+
+    return last_time
+
+def _write_err_mess(lgr, err, nvals, varname, lat_indx, lon_indx):
+    """
+    C
+    """
+    mess = '\n' + ERROR_STR + str(err) + '\tCould not write {} values'.format(err, nvals)
+    mess += ' for metric {} at lat/lon indexes: {} {}'.format(varname, lat_indx, lon_indx)
+    lgr.critical(mess)
+    print(mess)
+
+    return -1

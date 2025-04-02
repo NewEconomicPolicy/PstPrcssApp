@@ -1,4 +1,4 @@
-# -------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # Name:        spec_NCfuncs.py
 # Purpose:     Functions to create and write to netCDF files and return latitude and longitude indices
 # Author:      Mike Martin
@@ -158,6 +158,13 @@ def create_raw_nc_dset(form, metrics, soil_metrics):
     var_varia = nc_dset.createVariable('soc_diff', 'f4', ('lat', 'lon'), fill_value=MISSING_VALUE)
     var_varia.long_name = ''
     var_varia.units = 'kg/hectare'
+    var_varia.missing_value = MISSING_VALUE
+
+    for var_name in metrics:
+        var_name_yrs = var_name + '_yrs'
+        var_varia = nc_dset.createVariable(var_name_yrs, 'f4', ('lat', 'lon', 'time_yrs'), fill_value=missing_value)
+        var_varia.units = 'kg/hectare'
+        var_varia.missing_value = MISSING_VALUE
 
     # close netCDF file
     # ================
