@@ -1,4 +1,4 @@
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # Name:        spec_NCfuncs.py
 # Purpose:     Functions to create and write to netCDF files and return latitude and longitude indices
 # Author:      Mike Martin
@@ -6,9 +6,8 @@
 # Description: create dimensions: "longitude", "latitude" and "time"
 #              create five ECOSSE variables i.e. 'n2o','soc','co2', 'no3', and 'ch4'
 # Licence:     <your licence>
-#-------------------------------------------------------------------------------
-#!/usr/bin/env python
-
+# -------------------------------------------------------------------------------
+#
 __prog__ = 'netcdf_funcs.py'
 __version__ = '0.0.0'
 __author__ = 's03mm5'
@@ -19,8 +18,8 @@ import time
 from netCDF4 import Dataset
 from numpy import arange, float32
 
-missing_value = -999.0
-imiss_value = int(missing_value)
+MISSING_VALUE = -999.0
+IMISS_VALUE = int(MISSING_VALUE)
 
 def create_raw_nc_dset(form, metrics, soil_metrics):
     """
@@ -28,7 +27,7 @@ def create_raw_nc_dset(form, metrics, soil_metrics):
     output_variables = list(['soc', 'co2', 'ch4', 'no3', 'n2o'])
     for var_name in output_variables[0:1]:
     """
-    func_name =  __prog__ + ' create_nc_file'
+    func_name = __prog__ + ' create_raw_nc_dset'
 
     study = form.study_defn['study']
 
@@ -91,7 +90,7 @@ def create_raw_nc_dset(form, metrics, soil_metrics):
     # call the Dataset constructor to create file
     # ===========================================
     fut_clim_scen = 'EObs'
-    nc_dset = Dataset(fout_name,'w', format='NETCDF4')
+    nc_dset = Dataset(fout_name, 'w')
 
     # create global attributes
     # ========================
@@ -100,7 +99,7 @@ def create_raw_nc_dset(form, metrics, soil_metrics):
     nc_dset.attributation = 'Created at ' + date_stamp + ' from Spatial Ecosse '
     nc_dset.future_climate_scenario = fut_clim_scen
     data_used = 'Data used: HWSD soil, '
-    data_used += '{} past weather and {} future climate'.format(fut_clim_scen,fut_clim_scen)
+    data_used += '{} past weather and {} future climate'.format(fut_clim_scen, fut_clim_scen)
     nc_dset.dataUsed = data_used
 
     # we create the dimensions using the createDimension method of a Group (or Dataset) instance
@@ -113,46 +112,52 @@ def create_raw_nc_dset(form, metrics, soil_metrics):
     # first argument is name of the variable, second is datatype, third is a tuple with the name (s) of the dimension(s).
     # lats = nc_dset.createVariable('latitude',dtype('float32').char,('lat',))
     #
-    lats = nc_dset.createVariable('latitude','f4',('lat',))
+    lats = nc_dset.createVariable('latitude', 'f4', ('lat',))
     lats.units = 'degrees of latitude North to South in ' + str(resol) + ' degree steps'
     lats.long_name = 'latitude'
     lats[:] = alats
 
-    lons = nc_dset.createVariable('longitude','f4',('lon',))
+    lons = nc_dset.createVariable('longitude', 'f4', ('lon',))
     lons.units = 'degrees of longitude West to East in ' + str(resol) + ' degree steps'
     lons.long_name = 'longitude'
     lons[:] = alons
 
     # TODO: check these
-    times = nc_dset.createVariable('time','i2',('time',))
+    times = nc_dset.createVariable('time', 'i2', ('time',))
     times.units = 'months from January {} - {} years'.format(form.study_defn['futStrtYr'], nyears)
     times[:] = atimes
 
     # create the area variable
     # ========================
-    var_varia = nc_dset.createVariable('area','f4',('lat','lon'), fill_value = missing_value)
+    var_varia = nc_dset.createVariable('area', 'f4', ('lat', 'lon'), fill_value=MISSING_VALUE)
     var_varia.units = 'km**2'
-    var_varia.missing_value = missing_value
+    var_varia.missing_value = MISSING_VALUE
 
     # create the mu_global variable
     # =============================
-    var_varia = nc_dset.createVariable('mu_global','i4',('lat','lon'), fill_value = imiss_value)
+    var_varia = nc_dset.createVariable('mu_global', 'i4', ('lat', 'lon'), fill_value=imiss_value)
     var_varia.units = 'HWSD global mapping unit'
-    var_varia.missing_value = imiss_value
+    var_varia.missing_value = IMISS_VALUE
 
     # create the soil variables
     # =========================
     for metric in soil_metrics:
-        var_varia = nc_dset.createVariable(metric,'f4',('lat','lon'), fill_value = missing_value)
+        var_varia = nc_dset.createVariable(metric, 'f4', ('lat', 'lon'), fill_value=MISSING_VALUE)
         var_varia.units = soil_metrics[metric]
-        var_varia.missing_value = missing_value
+        var_varia.missing_value = MISSING_VALUE
 
     # create the time dependent metrics and assign default data
     # =========================================================
     for var_name in metrics:
-        var_varia = nc_dset.createVariable(var_name,'f4',('lat','lon','time'), fill_value = missing_value)
+        var_varia = nc_dset.createVariable(var_name, 'f4', ('lat', 'lon', 'time'), fill_value=MISSING_VALUE)
         var_varia.units = 'kg/hectare'
-        var_varia.missing_value = missing_value
+        var_varia.missing_value = MISSING_VALUE
+
+    # create the change in soc from start of simulation to end year
+    # =============================================================
+    var_varia = nc_dset.createVariable('soc_diff', 'f4', ('lat', 'lon'), fill_value=MISSING_VALUE)
+    var_varia.long_name = ''
+    var_varia.units = 'kg/hectare'
 
     # close netCDF file
     # ================

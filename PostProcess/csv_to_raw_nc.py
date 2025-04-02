@@ -48,9 +48,9 @@ def _update_progress(last_time, metric, cell_id):
         return last_time
 
 def csv_to_raw_netcdf(form):
-    '''
+    """
     NC file is deleted if it already exists
-    '''
+    """
     nc_fname = create_raw_nc_dset(form, METRICS, SOIL_METRICS)
     if isinstance(nc_fname, int):
         return

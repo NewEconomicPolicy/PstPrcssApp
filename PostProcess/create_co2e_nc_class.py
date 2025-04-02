@@ -1,4 +1,4 @@
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # Name:
 # Purpose:     Functions to create and write to netCDF files and return latitude and longitude indices
 # Author:      Mike Martin
@@ -6,9 +6,8 @@
 # Description: create dimensions: "longitude", "latitude" and "time"
 #              create five ECOSSE variables i.e. 'n2o','soc','co2', 'no3', and 'ch4'
 # Licence:     <your licence>
-#-------------------------------------------------------------------------------
-#!/usr/bin/env python
-
+# -------------------------------------------------------------------------------
+#
 __prog__ = 'create_co2e_nc_class.py'
 __version__ = '0.0.0'
 __author__ = 's03mm5'
@@ -18,6 +17,7 @@ from os import remove
 import time
 from netCDF4 import Dataset
 from numpy import arange, float32
+from PyQt5.QtWidgets import QApplication
 
 from nc_low_level_fns import generate_mnthly_atimes
 
@@ -29,18 +29,18 @@ def create_co2e_nc_dset(form, metric_obj):
     """
     return NC files name
     """
-    func_name =  __prog__ + ' create_co2e_nc_dset'
+    func_name = __prog__ + ' create_co2e_nc_dset'
 
-    study   = metric_obj.study
+    study = metric_obj.study
     out_dir = metric_obj.out_dir
-    metric  = metric_obj.metric
+    metric = metric_obj.metric
     fout_name = metric_obj.fout_name
 
-    nfields      = form.trans_defn['nfields']
-    delete_flag  = form.w_del_nc.isChecked()
+    nfields = form.trans_defn['nfields']
+    delete_flag = form.w_del_nc.isChecked()
 
-    resolution     = form.study_defn['resolution']
-    fut_end_year   = form.study_defn['futEndYr']
+    resolution = form.study_defn['resolution']
+    fut_end_year = form.study_defn['futEndYr']
     clim_dset = form.study_defn['climScnr']
 
     # expand bounding box to make sure all results are included
@@ -73,7 +73,7 @@ def create_co2e_nc_dset(form, metric_obj):
     # setup time dimension
     # ====================
     if nfields > MAX_FIELDS_MONTHLY:
-        nmonths = int(12*(nfields)/365)
+        nmonths = int(12 * nfields / 365)
         timestep = 'Daily'
     else:
         nmonths = nfields
@@ -86,7 +86,7 @@ def create_co2e_nc_dset(form, metric_obj):
 
     # call the Dataset constructor to create file
     # ===========================================
-    nc_dset = Dataset(fout_name,'w', format='NETCDF4')
+    nc_dset = Dataset(fout_name, 'w')
 
     # create global attributes
     # ========================
@@ -108,21 +108,21 @@ def create_co2e_nc_dset(form, metric_obj):
     # first argument is name of the variable, second is datatype, third is a tuple with the name (s) of the dimension(s).
     # lats = nc_dset.createVariable('latitude',dtype('float32').char,('latitude',))
     #
-    lats = nc_dset.createVariable('latitude','f4',('latitude',))
+    lats = nc_dset.createVariable('latitude', 'f4', ('latitude',))
     lats.description = 'degrees of latitude North to South in ' + str(resol) + ' degree steps'
     lats.units = 'degrees_north'
     lats.long_name = 'latitude'
     lats.axis = 'Y'
     lats[:] = alats
 
-    lons = nc_dset.createVariable('longitude','f4',('longitude',))
+    lons = nc_dset.createVariable('longitude', 'f4', ('longitude',))
     lons.units = 'degrees of longitude West to East in ' + str(resol) + ' degree steps'
     lons.units = 'degrees_east'
     lons.long_name = 'longitude'
     lons.axis = 'X'
     lons[:] = alons
 
-    times = nc_dset.createVariable('time','f4',('time',))
+    times = nc_dset.createVariable('time', 'f4', ('time',))
     times.units = 'days since 1900-01-01'
     times.calendar = 'standard'
     times.axis = 'T'
@@ -131,21 +131,21 @@ def create_co2e_nc_dset(form, metric_obj):
 
     # create time_bnds variable
     # =========================
-    time_bnds = nc_dset.createVariable('time_bnds','f4',('time','bnds'), fill_value = MISSING_VALUE)
+    time_bnds = nc_dset.createVariable('time_bnds', 'f4', ('time', 'bnds'), fill_value=MISSING_VALUE)
     time_bnds._ChunkSizes = 1, 2
-    time_bnds[:,0] = atimes_strt
-    time_bnds[:,1] = atimes_end
+    time_bnds[:, 0] = atimes_strt
+    time_bnds[:, 1] = atimes_end
 
     # create the area variable
     # ========================
-    areas = nc_dset.createVariable('area','f4',('latitude','longitude'), fill_value = MISSING_VALUE)
+    areas = nc_dset.createVariable('area', 'f4', ('latitude', 'longitude'), fill_value=MISSING_VALUE)
     areas.units = 'km**2'
     areas.MISSING_VALUE = MISSING_VALUE
 
     # create the time dependent metrics and assign default data
     # =========================================================
     var_name = metric_obj.var_name
-    var_varia = nc_dset.createVariable(var_name,'f4',('time', 'latitude','longitude'), fill_value = MISSING_VALUE)
+    var_varia = nc_dset.createVariable(var_name, 'f4', ('time', 'latitude','longitude'), fill_value=MISSING_VALUE)
     var_varia.long_name = metric_obj.long_name
     var_varia.units = metric_obj.units
 
@@ -156,14 +156,14 @@ def create_co2e_nc_dset(form, metric_obj):
 
     mess = 'Created: ' + fout_name
     print(mess)
-    # form.lgr.info()
+    QApplication.processEvents()
 
     return fout_name, var_name, nmonths
 
-class Co2e_nc_defn(object, ):
-    '''
+class Co2eNcDefn(object, ):
+    """
     instantiate
-    '''
+    """
     def __init__(self, metric, rqrd_flist, land_use, out_dir, study, delete_flag = True):
         """
 

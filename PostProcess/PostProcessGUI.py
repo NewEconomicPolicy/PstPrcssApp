@@ -421,7 +421,7 @@ class Form(QWidget):
     #
     def aggregToCsvClicked(self):
         """
-
+        C
         """
         if read_study_definition(self):
             if aggreg_metrics_to_csv(self):
@@ -435,14 +435,14 @@ class Form(QWidget):
 
     def cutCsvFilesClicked(self):
         """
-
+        C
         """
         cut_csv_files(self)
         return
 
     def cutCsvFiles1961Clicked(self):
         """
-
+        C
         """
         cut_str = '-f1-8,1929-3608'
         cut_csv_files(self, cut_str)
@@ -450,7 +450,7 @@ class Form(QWidget):
 
     def csvDataToCO2eNcClicked(self):
         """
-
+        C
         """
 
         if read_study_definition(self):
@@ -459,7 +459,7 @@ class Form(QWidget):
 
     def csvDataToRawNcClicked(self):
         """
-
+        C
         """
         if read_study_definition(self):
             csv_to_raw_netcdf(self)

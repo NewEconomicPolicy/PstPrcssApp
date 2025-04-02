@@ -1,13 +1,12 @@
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # Name:
 # Purpose:     read and write functions for processing ECOSSE results
 # Author:      Mike Martin
 # Created:     11/12/2015
 # Licence:     <your licence>
 #
-#-------------------------------------------------------------------------------
-#!/usr/bin/env python
-
+# -------------------------------------------------------------------------------
+#
 __prog__ = 'input_output_funcs.py'
 __version__ = '0.0.1'
 __author__ = 's03mm5'
@@ -41,7 +40,7 @@ SMRY_ROW_LEN = 29
 
 def clean_and_zip(form, dir_list, stage_dir, mgmt_flag):
     """
-
+    C
     """
     for dirn in dir_list:
         if mgmt_flag:

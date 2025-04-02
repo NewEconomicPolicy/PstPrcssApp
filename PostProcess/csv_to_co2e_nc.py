@@ -1,13 +1,12 @@
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # Name:
 # Purpose:     main function to process Spec results
 # Author:      Mike Martin
 # Created:     11/12/2015
 # Licence:     <your licence>
 # Comments:    Global warming potential(GWP)
-#-------------------------------------------------------------------------------
-#!/usr/bin/env python
-
+# -------------------------------------------------------------------------------
+#
 __prog__ = 'csv_to_co2e_nc.py'
 __version__ = '0.0.1'
 __author__ = 's03mm5'
@@ -16,6 +15,7 @@ from os.path import split
 from locale import format_string
 from time import time
 from netCDF4 import Dataset
+from PyQt5.QtWidgets import QApplication
 
 from input_output_funcs import open_file_sets, read_one_line
 from create_coards_nc_class import find_metric_in_flist_names
@@ -28,7 +28,7 @@ GRANULARITY = 120
 
 MAX_FIELDS_MONTHLY = 3600
 MAX_LINES = 10000000000  # stop processing after this number of lines
-METRICS = list(['ch4','n2o','co2','soc'])
+METRICS = list(['ch4', 'n2o', 'co2', 'soc'])
 
 CO2EQUIV_CH4 = 32      # from MA 24 April 2023, the latest IPCC report?
 CO2EQUIV_N2O = 273
@@ -62,14 +62,11 @@ def _convert_to_co2e(num_months, metric_vals, daily_flag):
             co2e = 0.0  # Can't calculate net GHG because can't calculate change in SOC
         monthly_vals.append(co2e)
 
-    #rescaled_vals = rescale_metric_values(num_months, monthly_vals, 'co2e', daily_flag)
-
-    #return rescaled_vals
     return monthly_vals
 
 def _generate_nc(form, metric_obj, daily_flag):
     """
-
+    C
     """
     nc_fname, var_name, num_months = create_co2e_nc_dset(form, metric_obj)
     if isinstance(nc_fname, int):
@@ -78,7 +75,7 @@ def _generate_nc(form, metric_obj, daily_flag):
     # open the newly created NC files
     # ===============================
     try:
-        nc_dset = Dataset(nc_fname,'a', format='NETCDF4')
+        nc_dset = Dataset(nc_fname, 'a')
     except TypeError as err:
         err = 'Unable to open output file. {}'.format(err)
         print(err)
@@ -94,18 +91,18 @@ def _generate_nc(form, metric_obj, daily_flag):
 
     # read and process each line
     # ==========================
-    ntrans_lines  = form.trans_defn['nlines']
+    ntrans_lines = form.trans_defn['nlines']
     ntrans_fields = form.trans_defn['nfields']
     nlines = 0
     num_out_lines = 0
     num_bad_lines = 0
     last_time = time()
-    while (nlines <= MAX_LINES):
+    while nlines <= MAX_LINES:
 
         # read in land use transition results
         # ===================================
         num_trans_time_vals, nsoil_metrics, line_prefix, atom_tran = read_one_line(trans_fobjs)
-        if atom_tran == None:
+        if atom_tran is None:
             break
         nlines += 1
 
@@ -125,7 +122,7 @@ def _generate_nc(form, metric_obj, daily_flag):
             area = float(sarea)
             total_area += area
             mu_global = int(smu_global)
-            latitude  = float(slat)
+            latitude = float(slat)
             longitude = float(slon)
 
             lat_indx, lon_indx = get_nc_coords(form, latitude, longitude, max_lat_indx, max_lon_indx)
@@ -157,14 +154,14 @@ def _generate_nc(form, metric_obj, daily_flag):
         trans_fobjs[key].close()
 
     nc_dset.close()
-
     print('\nFinished - having written {} lines to NC file: {}\n'.format(nlines, nc_fname))
+    QApplication.processEvents()
 
     return nlines
 
 def csv_to_co2e_netcdf(form):
     """
-
+    C
     """
     mess = '*** Yearly data will be generated from '
 
@@ -204,13 +201,14 @@ def csv_to_co2e_netcdf(form):
 
     # create basic co2e object
     # ========================
+    metric_obj = None
     if success_flag:
         metric_obj = Co2e_nc_defn('co2e', rqrd_flist, land_use, out_dir, study, delete_flag)
         if metric_obj.fout_name is None:
             success_flag = False
 
     # construct NC file
-    #==================
+    # =================
     if success_flag:
         nlines = _generate_nc(form, metric_obj, daily_flag)
         if nlines == 0:
