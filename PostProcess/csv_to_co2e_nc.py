@@ -19,7 +19,7 @@ from PyQt5.QtWidgets import QApplication
 
 from input_output_funcs import open_file_sets, read_one_line
 from create_coards_nc_class import find_metric_in_flist_names
-from create_co2e_nc_class import create_co2e_nc_dset, Co2e_nc_defn
+from create_co2e_nc_class import create_co2e_nc_dset, Co2eNcDefn
 from nc_low_level_fns import get_nc_coords, update_progress_bar
 
 sleepTime = 5
@@ -203,7 +203,7 @@ def csv_to_co2e_netcdf(form):
     # ========================
     metric_obj = None
     if success_flag:
-        metric_obj = Co2e_nc_defn('co2e', rqrd_flist, land_use, out_dir, study, delete_flag)
+        metric_obj = Co2eNcDefn('co2e', rqrd_flist, land_use, out_dir, study, delete_flag)
         if metric_obj.fout_name is None:
             success_flag = False
 

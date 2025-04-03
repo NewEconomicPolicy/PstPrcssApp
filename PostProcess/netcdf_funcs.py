@@ -106,6 +106,7 @@ def create_raw_nc_dset(form, metrics, soil_metrics):
     nc_dset.createDimension('lat', num_alats)
     nc_dset.createDimension('lon', num_alons)
     nc_dset.createDimension('time', len(atimes))
+    nc_dset.createDimension('time_yrs', nyears)
 
     # create the variable (4 byte float in this case)
     # to create a netCDF variable, use the createVariable method of a Dataset (or Group) instance.
@@ -135,7 +136,7 @@ def create_raw_nc_dset(form, metrics, soil_metrics):
 
     # create the mu_global variable
     # =============================
-    var_varia = nc_dset.createVariable('mu_global', 'i4', ('lat', 'lon'), fill_value=imiss_value)
+    var_varia = nc_dset.createVariable('mu_global', 'i4', ('lat', 'lon'), fill_value=IMISS_VALUE)
     var_varia.units = 'HWSD global mapping unit'
     var_varia.missing_value = IMISS_VALUE
 
@@ -164,7 +165,8 @@ def create_raw_nc_dset(form, metrics, soil_metrics):
     # create the change in soc from start of simulation to end year
     # =============================================================
     var_varia = nc_dset.createVariable('soc_diff', 'f4', ('lat', 'lon'), fill_value=MISSING_VALUE)
-    var_varia.long_name = ''
+    var_varia.description = 'change in soc from start of simulation to end year'
+    var_varia.long_name = 'soc difference last - first'
     var_varia.units = 'kg/hectare'
     var_varia.missing_value = MISSING_VALUE
 

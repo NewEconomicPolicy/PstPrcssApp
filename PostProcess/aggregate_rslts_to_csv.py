@@ -403,9 +403,10 @@ class SpecCsv(object):
         id_ = [province] + id_
         percentages = manifest[mu_global.lstrip('0')]
         area_grid_cells = manifest['location']['area']
-        latitude = manifest['location']['latitude']
+        lat = manifest['location']['latitude']
+        lon = manifest['location']['longitude']
 
-        id_mod_ = make_id_mod(id_, latitude, area_grid_cells, int(lon_id))
+        id_mod_ = make_id_mod(id_, lat, lon, area_grid_cells, int(lon_id))
         record = id_mod_
         for key in result.keys():
             record.append(result[key][0])

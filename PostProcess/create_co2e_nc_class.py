@@ -116,7 +116,7 @@ def create_co2e_nc_dset(form, metric_obj):
     lats[:] = alats
 
     lons = nc_dset.createVariable('longitude', 'f4', ('longitude',))
-    lons.units = 'degrees of longitude West to East in ' + str(resol) + ' degree steps'
+    lons.description = 'degrees of longitude West to East in ' + str(resol) + ' degree steps'
     lons.units = 'degrees_east'
     lons.long_name = 'longitude'
     lons.axis = 'X'
@@ -139,6 +139,8 @@ def create_co2e_nc_dset(form, metric_obj):
     # create the area variable
     # ========================
     areas = nc_dset.createVariable('area', 'f4', ('latitude', 'longitude'), fill_value=MISSING_VALUE)
+    areas.description = 'grid cell area'
+    areas.long_name = 'area'
     areas.units = 'km**2'
     areas.MISSING_VALUE = MISSING_VALUE
 

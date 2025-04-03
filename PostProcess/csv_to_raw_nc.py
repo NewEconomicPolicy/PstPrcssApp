@@ -37,6 +37,24 @@ line_length = 79
 WARNING_STR = '*** Warning *** '
 ERROR_STR = '*** Error *** '
 
+def _add_soc_diff(lgr, nc_dset, metric, lat_indx, lon_indx, nvals, atom_rec):
+    """
+    C
+    """
+    if metric != 'soc':
+        return
+
+    varname = metric + '_diff'
+
+    try:
+        nc_dset.variables[varname][lat_indx, lon_indx] = atom_rec[-1] - atom_rec[0]
+
+    except (IndexError, ValueError, RuntimeError) as err:
+        _write_err_mess(lgr, err, nvals, varname, lat_indx, lon_indx)
+        return -1
+
+    return
+
 def _add_annual_variable(lgr, nc_dset, metric, lat_indx, lon_indx, nyears, nvals, atom_rec):
     """
     C
@@ -149,7 +167,6 @@ def csv_to_raw_netcdf(form):
                     print(WARNING_STR + 'Number of months {} should be divisable by 12'.format(nvals))
 
                 if varname == 'soil':
-
                     for indx, metric in enumerate(SOIL_METRICS):
                         nc_dset.variables[metric][lat_indx, lon_indx] = atom_tran[varname][indx]
                 else:
@@ -163,18 +180,22 @@ def csv_to_raw_netcdf(form):
                         _write_err_mess(form.lgr, err, nvals, varname, lat_indx, lon_indx)
                         return -1
 
-                    # add annual values
-                    # =================
+                    # add annual values and soc difference
+                    # ====================================
                     _add_annual_variable(form.lgr, nc_dset, varname, lat_indx, lon_indx, nyears, nvals, atom_rec)
+                    if varname == 'soc':
+                        _add_soc_diff(form.lgr, nc_dset, varname, lat_indx, lon_indx, nvals, atom_rec)
 
+                    '''
                     # Borneo addition: take difference between December of first year and last value
                     # ===============
-                    if len(atom_tran[varname]) > 492:           # mustr have at least 40 years
+                    if len(atom_tran[varname]) > 492:           # must have at least 40 years
                         val_decem_yr1  = atom_tran[varname][11]
                         val_decem_yr40 = atom_tran[varname][480 + 11]
                         val_decem_yr90 = atom_tran[varname][-1]
                         nc_dset.variables[varname][lat_indx, lon_indx, -2] = val_decem_yr40 - val_decem_yr1
                         nc_dset.variables[varname][lat_indx, lon_indx, -1] = val_decem_yr90 - val_decem_yr1
+                    '''
 
         num_out_lines += 1
 

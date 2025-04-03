@@ -62,6 +62,7 @@ class Form(QWidget):
         w_lbl20 = QLabel()
         pixmap = QPixmap(self.settings['fname_png'])
         w_lbl20.setPixmap(pixmap)
+        w_lbl20.setScaledContents(True)
 
         lh_vbox.addWidget(w_lbl20)
 
@@ -157,7 +158,7 @@ class Form(QWidget):
         self.w_aggreg = w_aggreg
 
         # ========== spacer
-        irow += 2
+        irow += 1
         lbl13s = QLabel()
         grid.addWidget(lbl13s, irow, 0)
 
@@ -237,6 +238,11 @@ class Form(QWidget):
         grid.addWidget(w_soil, irow, icol)
         max_icol = icol
 
+        # ========== spacer
+        irow += 1
+        lbl13s = QLabel()
+        grid.addWidget(lbl13s, irow, 0)
+
         # SV line
         # =======
         irow += 1
@@ -271,6 +277,11 @@ class Form(QWidget):
         w_zip_sv.setFixedWidth(STD_BTN_SIZE)
         grid.addWidget(w_zip_sv, irow, icol)
         w_zip_sv.clicked.connect(lambda: self.cleanZip(False))
+
+        # ========== spacer
+        irow += 1
+        lbl13s = QLabel()
+        grid.addWidget(lbl13s, irow, 0)
 
         # MK line
         # =======
@@ -312,6 +323,11 @@ class Form(QWidget):
         grid.addWidget(w_mk_prcss, irow, icol)
         w_mk_prcss.clicked.connect(self.mkProcess)
 
+        # ========== spacer
+        irow += 1
+        lbl13s = QLabel()
+        grid.addWidget(lbl13s, irow, 0)
+
         # SuperG
         # ======
         irow += 1
@@ -347,6 +363,11 @@ class Form(QWidget):
         w_ma_prcss.setFixedWidth(STD_BTN_SIZE)
         grid.addWidget(w_ma_prcss, irow, icol)
         w_ma_prcss.clicked.connect(lambda: self.maProcessAll(True))
+
+        # ========== spacer
+        irow += 1
+        lbl13s = QLabel()
+        grid.addWidget(lbl13s, irow, 0)
 
         # ==========
         irow += 1
@@ -387,6 +408,11 @@ class Form(QWidget):
         w_clean_zip.setFixedWidth(STD_BTN_SIZE)
         grid.addWidget(w_clean_zip, irow, icol)
         w_clean_zip.clicked.connect(self.cleanZip)
+
+        # ========== spacer
+        irow += 1
+        lbl13s = QLabel()
+        grid.addWidget(lbl13s, irow, 0)
 
         # ==========
         irow += 1
