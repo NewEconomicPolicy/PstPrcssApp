@@ -277,7 +277,7 @@ def _deduce_fut_end_year(form):
     # ===============================================================
     smmry_out_flag = False
     for subdir in subdirs_raw:
-        if subdir[0:5] == 'lat00':
+        if subdir[0:5] != 'lat00':      # typical subdir = '246500_642500'
             smmry_out_fn = join(sims_dir, subdir, 'SUMMARY.OUT')
             if isfile(smmry_out_fn):
                 smmry_out_flag = True
