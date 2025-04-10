@@ -26,6 +26,7 @@ from input_output_funcs import read_study_definition, ecosse_results_files, chan
 from input_output_funcs import check_cut_csv_files, aggregate_csv_create_coards, clean_and_zip, chng_study_create_co2e
 
 from aggregate_rslts_to_csv import aggreg_metrics_to_csv, aggregate_soil_data_to_csv
+from aggr_osgb_rslts_to_csv import aggreg_osgb_metrics_to_csv
 from generate_npp_nc import sims_results_to_nc
 from csv_to_raw_nc import csv_to_raw_netcdf
 from csv_to_co2e_nc import csv_to_co2e_netcdf
@@ -450,7 +451,16 @@ class Form(QWidget):
         C
         """
         if read_study_definition(self):
-            if aggreg_metrics_to_csv(self):
+
+            version = self.study_defn['version']
+            if version == 'NetZeroPlus':
+                print('OSGB version not yet ready')
+                retcode = aggreg_osgb_metrics_to_csv(self)
+                return
+            else:
+                retcode = aggreg_metrics_to_csv(self)
+
+            if retcode:
 
                 # update to reflect aggregation result
                 # ====================================

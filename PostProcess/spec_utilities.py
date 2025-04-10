@@ -56,9 +56,9 @@ def update_progress_check(last_time, start_time,  nident, num_sims, not_ident):
     return last_time
 
 def trim_summaries(form):
-    '''
+    """
     remake SUMMARY.OUT with later years of simulation e.g. 1980-2018
-    '''
+    """
 
     # TODO: cleanup
     # =============
@@ -152,42 +152,53 @@ class EcosseDialect(csv.excel):
     skipinitialspace = True
 
 def make_id_mod(id_, latitude, longitude, area_grid_cell, gran_lon):
-    '''
+    """
     latitude and longitude are taken from
 
     id_mod = list([id_[0], str(round(latitude,6))])
     longitude = (gran_lon/120) - 180.0
     id_mod.append(str(round(longitude,6)))
-    '''
+    """
     id_mod = list([id_[0], str(round(latitude, 6)), str(round(longitude,6))])
     id_mod = id_mod + id_[3:]
     id_mod.append(area_grid_cell)
 
     return id_mod
 
-def deconstruct_sim_dir(sim_dir, scenario, land_use):
+def deconstruct_sim_dir(sim_dir, scenario, land_use, mu_global=None, soil_id=None):
+    """
 
+    """
     directory = split(sim_dir)[1]
     parts = directory.split('_')
-    lat_id = parts[0].strip('lat')
-    lon_id = parts[1].strip('lon')
-    # Get rid of leading zeros before the minus sign:
+
+    # check for OSGB
+    # ==============
+    if directory.find('lat') == -1:
+        lat_id = parts[0]
+        lon_id = parts[1]
+
+    else:
+        lat_id = parts[0].strip('lat')
+        lon_id = parts[1].strip('lon')
+        mu_global = parts[2].strip('mu')
+        mu_global = mu_global.lstrip('0')
+
+        soil_id = parts[3].lstrip('s')
+        soil_id = soil_id.lstrip('0')
+
+    # Get rid of leading zeros
+    # =========================
     lat_id = str(int(lat_id))
     lon_id = str(int(lon_id))
-    #
-    mu_global = parts[2].strip('mu')
-    mu_global = mu_global.lstrip('0')
-
-    soil_id = parts[3].lstrip('s')
-    soil_id = soil_id.lstrip('0')
     lut = land_use   # from study definition file
 
     return [lat_id, lon_id, mu_global, scenario, soil_id, lut]
 
 def retrieve_soil_results_ss(sim_dir):
-    '''
+    """
     TODO: rewrite
-    '''
+    """
 
     # split directory name to retrieve the mu global
     # =============================================
@@ -352,23 +363,28 @@ def retrieve_results(lggr, sim_dir):
     return full_result
 
 def load_manifest(lgr, sim_dir):
-    '''
-    '''
+    """
+    construct the name of the manifest file and read it
+    last 4 characters of lat/lon simulations directory indicates soil, so ignore
+    """
+    root_dir, cell_id = split(sim_dir)
 
-    # construct the name of the manifest file and read it
-    # last 4 characters of simulations directory indicates soil, so ignore
-    root_dir, locator_segment = split(sim_dir[0:-4])
-    manifest_fname = join(root_dir,'manifest_' + locator_segment + '.txt')
-    if isfile(manifest_fname):
-        lgr.info('manifest file ' + manifest_fname + ' exists')
+    # identify if lat/lon or OSGB
+    # ===========================
+    if cell_id.find('lat') >= 0:
+        cell_id = cell_id[0:-4]
+
+    manifest_fn = join(root_dir,'manifest_' + cell_id + '.txt')
+    if isfile(manifest_fn):
+        lgr.info('manifest file ' + manifest_fn + ' exists')
         try:
-            with open(manifest_fname, 'r') as fmani:
+            with open(manifest_fn, 'r') as fmani:
                 manifest = json.load(fmani)
         except (OSError, IOError) as err:
             print(str(err))
             manifest = None
     else:
-        print('manifest file ' + manifest_fname + ' does not exist')
+        print('manifest file ' + manifest_fn + ' does not exist')
         manifest = None
 
     return manifest

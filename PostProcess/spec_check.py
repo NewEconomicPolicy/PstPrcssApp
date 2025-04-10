@@ -23,11 +23,33 @@ SMRY_OUT = 'SUMMARY.OUT'
 SV_DIR = 'G:\\GlblEcssOutputs\\EcosseOutputs'
 
 ASIA_WHT = 'Asia_Wheat_Asia_Wheat'
+def verify_subdir(subdir):
+    """
+    validate subdirectory as Global Ecosse
+    """
+    verify_flag = False
+    subdir_segs = subdir.split('_')
+    nsegs = len(subdir_segs)
+    if nsegs == 4:      # lats/lons typically  lat0002374_lon0024154_mu10090_s01
+        if subdir[0:5] == 'lat00':
+            verify_flag = True
+
+    elif nsegs == 2:    # OSGB typically  73500_870500
+        for sval in subdir_segs:
+            try:
+                ival = int(sval)
+            except ValueError as err:
+                verify_flag = False
+                break
+            else:
+                verify_flag = True
+
+    return verify_flag
 
 def check_asia_results(form):
-    '''
+    """
     check CSV outputs  across multiple simulations
-    '''
+    """
     sim_dirs = {}
     base_lines = {}
     for scenario in ['A1B', 'A2']:
@@ -43,9 +65,9 @@ def check_asia_results(form):
     return True
 
 def check_spec_results(form):
-    '''
+    """
     check SUMMARY.OUTs across two simulations
-    '''
+    """
 
     # compare
     # =======
