@@ -207,7 +207,7 @@ class SpecCsvOsgb(object):
                 print(err_mess)
                 return False
 
-            self.writers[varname] = writer(self.output_fhs[varname], delimiter='\t')
+            self.writers[varname] = writer(self.output_fhs[varname], delimiter=',')
             self.writers[varname].writerow(hdr_rec)
 
         return True
