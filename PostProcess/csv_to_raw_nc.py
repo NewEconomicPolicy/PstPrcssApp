@@ -1,13 +1,12 @@
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # Name:
 # Purpose:     main function to process Spec results
 # Author:      Mike Martin
 # Created:     11/12/2015
 # Licence:     <your licence>
 # Comments:    Global warming potential(GWP)
-#-------------------------------------------------------------------------------
-#!/usr/bin/env python
-
+# -------------------------------------------------------------------------------
+#
 __prog__ = 'csv_to_raw_nc.py'
 __version__ = '0.0.1'
 __author__ = 's03mm5'
@@ -27,12 +26,10 @@ bad_fobj_key = 'bad_lines'
 # make sure you have the variable names in the same order as the conversion factors
 # result names (same in both folders), must match order of other lists (assume they have .txt suffix)
 #  'plant_C_inp':'kgC/ha/yr'}
-METRICS      = list(['co2','no3','n2o','soc', 'npp'])
-SOIL_METRICS = dict({'C_content':'kgC/ha', 'bulk_dens':'g/cm3', 'pH':'pH', 'clay':'%', 'silt':'%', 'sand':'%'})
+METRICS = list(['co2', 'no3', 'n2o', 'soc', 'npp'])
+SOIL_METRICS = dict({'C_content': 'kgC/ha', 'bulk_dens': 'g/cm3', 'pH': 'pH', 'clay': '%', 'silt': '%', 'sand': '%'})
 
-out_delim = '\t'
-out_delim = ','
-line_length = 79
+LINE_LENGTH = 79
 
 WARNING_STR = '*** Warning *** '
 ERROR_STR = '*** Error *** '
@@ -94,7 +91,7 @@ def csv_to_raw_netcdf(form):
     if isinstance(nc_fname, int):
         return
     try:
-        nc_dset = Dataset(nc_fname,'a', format='NETCDF4')
+        nc_dset = Dataset(nc_fname, 'a')
     except TypeError as err:
         print(ERROR_STR + 'Unable to open output file. {}'.format(err))
         return
@@ -106,7 +103,7 @@ def csv_to_raw_netcdf(form):
 
     # max_lines = int(form.w_nlines.text())
     max_lines = 9999999                                        # stop processing after this number of lines
-    max_lat_indx = nc_dset.variables['latitude'].shape[0]  - 1
+    max_lat_indx = nc_dset.variables['latitude'].shape[0] - 1
     max_lon_indx = nc_dset.variables['longitude'].shape[0] - 1
 
     # open all files
@@ -119,12 +116,12 @@ def csv_to_raw_netcdf(form):
     num_out_lines = 0
     num_bad_lines = 0
     last_time = time()
-    while (nline <= max_lines):
+    while nline <= max_lines:
 
         # read in land use transition results
         # ===================================
         num_trans_time_vals, nsoil_metrics, line_prefix, atom_tran = read_one_line(trans_fobjs)
-        if atom_tran == None:
+        if atom_tran is None:
             break
         nline += 1
 
@@ -148,7 +145,7 @@ def csv_to_raw_netcdf(form):
             area = float(sarea)
             total_area += area
             mu_global = int(smu_global)
-            latitude  = float(slat)
+            latitude = float(slat)
             longitude = float(slon)
             lat_indx, lon_indx = get_nc_coords(form, latitude, longitude, max_lat_indx, max_lon_indx)
             if lat_indx == -1:
@@ -227,7 +224,7 @@ def _update_progress(last_time, metric, cell_id):
     if time() - last_time > sleepTime:
         line = ('\rCompleted {} cells for {} metric'.format(cell_id, metric))
         len_line = len(line)
-        padding = ' ' * (line_length - len_line)
+        padding = ' ' * (LINE_LENGTH - len_line)
         line += padding
         stdout.write(line)
         last_time = time()
