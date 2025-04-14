@@ -32,11 +32,11 @@ ALL_METRICS = ['soc', 'co2', 'ch4', 'no3', 'npp', 'n2o']
 nfiles = len(ALL_METRICS)
 
 CUT_EXE_PATH = 'E:\\Freeware\\UnxUtils\\usr\\local\\wbin\\cut.exe'
-data_rec_prefix_len = 8
-maxFieldsMonthly = 3600     # TODO: if number of fields exceeeds this then assume timestep is daily
-setlocale(LC_ALL, '')
-
+DATA_REC_PREFIX_LEN = 8
+MAX_FLDS_MNTHLY = 3600     # TODO: if number of fields exceeeds this then assume timestep is daily
 SMRY_ROW_LEN = 29
+
+setlocale(LC_ALL, '')
 
 def clean_and_zip(form, dir_list, stage_dir, mgmt_flag):
     """
@@ -368,12 +368,16 @@ def ecosse_results_files(dir_name, descriptor_prefix):
             # ==============================
             if metric == 'soil':
                 continue
-            fobj = open(files[0], 'r')
-            dummy = fobj.readline()
-            first_rec = fobj.readline()
-            fobj.close()
-            nfields = len(first_rec.split()) - data_rec_prefix_len
-            if nfields > maxFieldsMonthly:
+            with open(files[0], 'r') as fobj:
+                dummy = fobj.readline()
+                first_rec = fobj.readline()
+
+            rec = first_rec.split()
+            if len(rec) == 1:
+                rec = first_rec.split(',')
+
+            nfields = len(rec) - DATA_REC_PREFIX_LEN
+            if nfields > MAX_FLDS_MNTHLY:
                 nyears = int((nfields)/365)
                 timestep = 'Daily'
             else:
@@ -438,12 +442,17 @@ def read_one_line(file_objs):
             vals = None
             break
 
+        # check for delimiter
+        # ===================
         data_rec = rec.split()
-        line_prefix = data_rec[0:data_rec_prefix_len]
-        num_vals = len(data_rec) - data_rec_prefix_len
+        if len(data_rec) == 1:
+            data_rec = rec.split(',')
+
+        line_prefix = data_rec[0:DATA_REC_PREFIX_LEN]
+        num_vals = len(data_rec) - DATA_REC_PREFIX_LEN
         vals[key] = []
         for k in range(num_vals):
-            vals[key].append(float(data_rec[k + data_rec_prefix_len]))  # first 8 cols are province, east, north, etc
+            vals[key].append(float(data_rec[k + DATA_REC_PREFIX_LEN]))  # first 8 cols are province, east, north, etc
 
         if key == 'soil':
             nsoil_metrics = num_vals
