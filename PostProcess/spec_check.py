@@ -23,7 +23,8 @@ SMRY_OUT = 'SUMMARY.OUT'
 SV_DIR = 'G:\\GlblEcssOutputs\\EcosseOutputs'
 
 ASIA_WHT = 'Asia_Wheat_Asia_Wheat'
-def verify_subdir(subdir):
+
+def verify_subdir(subdir, version=None):
     """
     validate subdirectory as Global Ecosse
     """
@@ -33,8 +34,8 @@ def verify_subdir(subdir):
     if nsegs == 4:      # lats/lons typically  lat0002374_lon0024154_mu10090_s01
         if subdir[0:5] == 'lat00':
             verify_flag = True
-
-    elif nsegs == 2:    # OSGB typically  73500_870500
+    '''
+    elif nsegs == 2 and version == 'NetZeroPlus':    # OSGB typically  73500_870500
         for sval in subdir_segs:
             try:
                 ival = int(sval)
@@ -43,7 +44,7 @@ def verify_subdir(subdir):
                 break
             else:
                 verify_flag = True
-
+    '''
     return verify_flag
 
 def check_asia_results(form):
