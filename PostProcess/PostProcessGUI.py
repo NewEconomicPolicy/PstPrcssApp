@@ -454,9 +454,8 @@ class Form(QWidget):
 
             version = self.study_defn['version']
             if version == 'NetZeroPlus':
-                print('OSGB version not yet ready')
+                print('OSGB version')
                 retcode = aggreg_osgb_metrics_to_csv(self)
-                return
             else:
                 retcode = aggreg_metrics_to_csv(self)
 
@@ -488,9 +487,12 @@ class Form(QWidget):
         """
         C
         """
-
         if read_study_definition(self):
-            csv_to_co2e_netcdf(self)
+            version = self.study_defn['version']
+            if version == 'NetZeroPlus':
+                print('OSGB version not yet ready')
+            else:
+                csv_to_co2e_netcdf(self)
         return
 
     def csvDataToRawNcClicked(self):
@@ -498,7 +500,11 @@ class Form(QWidget):
         C
         """
         if read_study_definition(self):
-            csv_to_raw_netcdf(self)
+            version = self.study_defn['version']
+            if version == 'NetZeroPlus':
+                print('OSGB version not yet ready')
+            else:
+                csv_to_raw_netcdf(self)
         return
 
     # ============= General operations ==========================
@@ -508,7 +514,11 @@ class Form(QWidget):
 
         """
         if read_study_definition(self):
-            csv_to_coards_netcdf(self)
+            version = self.study_defn['version']
+            if version == 'NetZeroPlus':
+                print('OSGB version not yet ready')
+            else:
+                csv_to_coards_netcdf(self)
         return
 
     def writeNppClicked(self):
@@ -516,7 +526,11 @@ class Form(QWidget):
 
         """
         if read_study_definition(self):
-            sims_results_to_nc(self)
+            version = self.study_defn['version']
+            if version == 'NetZeroPlus':
+                print('OSGB version not yet ready')
+            else:
+                sims_results_to_nc(self)
         return
 
     def writeSoilCsvClicked(self):
@@ -524,7 +538,11 @@ class Form(QWidget):
 
         """
         if read_study_definition(self):
-            aggregate_soil_data_to_csv(self)
+            version = self.study_defn['version']
+            if version == 'NetZeroPlus':
+                print('OSGB version not yet ready')
+            else:
+                aggregate_soil_data_to_csv(self)
         return
 
     # ============= MK operations ==========================
