@@ -45,6 +45,7 @@ def aggreg_osgb_metrics_to_csv(form, sims_dir=None):
     """
      called from GUI
      """
+    version = form.study_defn['version']
     if sims_dir is None:
         sims_dir = form.w_lbl_sims.text()
 
@@ -74,7 +75,7 @@ def aggreg_osgb_metrics_to_csv(form, sims_dir=None):
     # ===============================================================
     subdirs = []
     for subdir in subdirs_raw:      # typical OSGB subdir = '246500_642500'
-        if verify_subdir(subdir):
+        if verify_subdir(subdir, version):
             subdirs.append(subdir)
     num_sims = len(subdirs)
     del (subdirs_raw)
@@ -90,10 +91,9 @@ def aggreg_osgb_metrics_to_csv(form, sims_dir=None):
     warning_count = 0  # No. of warnings
     start_time = time()
     nfailed = 0
-    num_grid_cells = 0
+    num_grid_cells = 0  # No. of sims successfully processed
     total_area = 0.0
     last_time = time()
-    sim_num = 0         # No. of sims that have been processed
 
     # collect results, as a list, for a given cell for all of the dominant soils
     # ==========================================================================
@@ -105,7 +105,6 @@ def aggreg_osgb_metrics_to_csv(form, sims_dir=None):
         # area = spec_csv.process_osgb_rslts(scenario, sim_dir_prev, results, expand_results=None)
         area = 1
         total_area += area
-        num_grid_cells += 1
 
         # retrieve the data from summary.out
         # ==================================
@@ -133,7 +132,6 @@ def aggreg_osgb_metrics_to_csv(form, sims_dir=None):
 
         # =========================
         last_time = update_progress_post(last_time, start_time, num_grid_cells, num_manifests, skipped, nfailed, warning_count)
-        sim_num += 1
 
      # close CSV files
     # ================

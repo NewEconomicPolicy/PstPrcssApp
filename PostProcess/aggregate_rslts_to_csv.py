@@ -58,11 +58,11 @@ def aggreg_metrics_to_csv(form, sims_dir=None, expand_results=False):
         return False
 
     display_headers(form)
-    num_grid_cells = 0  # No. of grid cells have completed successfully
+    ngrid_cells = 0  # No. of grid cells have completed successfully
     failed = 0   # sims that failed to complete due to error
     skipped = 0  # sims that were skipped due to error
-    warning_count = 0   # No. of warnings
-    start_time = time()
+    warn_count = 0   # No. of warnings
+    strt_time = time()
 
     # get the climate scenario from the sims directory
     scenario = form.study_defn['climScnr']
@@ -84,9 +84,9 @@ def aggreg_metrics_to_csv(form, sims_dir=None, expand_results=False):
     del(subdirs_raw)
 
     print('Counting all manifest files...')
-    num_manifests = len(glob(normpath(sims_dir + '/manifest_lat*_lon*_mu*.txt')))
+    nmanifests = len(glob(normpath(sims_dir + '/manifest_lat*_lon*_mu*.txt')))
 
-    print('\nGathered {} simulation directories and counted {} manifest files...'.format(num_sims,num_manifests))
+    print('\nGathered {} simulation directories and counted {} manifest files...'.format(num_sims,nmanifests))
 
     # main loop
     # =========
@@ -116,7 +116,7 @@ def aggreg_metrics_to_csv(form, sims_dir=None, expand_results=False):
                 # ==================================================================
                 area = spec_csv.process_results(scenario, sim_dir_prev, results, expand_results)
                 total_area += area
-                num_grid_cells += 1
+                ngrid_cells += 1
 
             # initialise results list with ten dictionary elements, the first as a counter then one for each dominant soil
             # ============================================================================================================
@@ -150,7 +150,7 @@ def aggreg_metrics_to_csv(form, sims_dir=None, expand_results=False):
 
         sim_dir_prev = sim_dir
 
-        last_time = update_progress_post(last_time, start_time, num_grid_cells, num_manifests, skipped, failed, warning_count)
+        last_time = update_progress_post(last_time, strt_time, ngrid_cells, nmanifests, skipped, failed, warn_count)
         sim_num += 1
 
     # make sure last cell is written
@@ -158,17 +158,16 @@ def aggreg_metrics_to_csv(form, sims_dir=None, expand_results=False):
         # process and write accumulated results to output file
         area = spec_csv.process_results(scenario, sim_dir_prev, results, expand_results)
         total_area += area
-        num_grid_cells += 1
+        ngrid_cells += 1
 
     # close CSV file
     # ==============
+    last_time = 0
+    update_progress_post(last_time, strt_time, ngrid_cells, nmanifests, skipped, failed, warn_count)
     for key in spec_csv.output_fhs:
         spec_csv.output_fhs[key].close()
 
     form.lgr.info('\nSimulations completed.')
-
-    last_time = update_progress_post(last_time, start_time, num_grid_cells, num_manifests, skipped, failed, warning_count)
-
     mess = '\nAggregation of metrics from simulation results completed.'
     area_str = format_string("%12.2f", total_area, grouping=True)
     mess += '\t# failures: {}\tTotal area covered: {} km2'.format(failed, area_str)
@@ -257,6 +256,7 @@ def fetch_fut_end_year(form):
     """
     get future end year from study defimition file
     """
+    version = form.study_defn['version']
     sims_dir = form.w_lbl_sims.text()
     fut_end_year = form.study_defn['futEndYr']
     fut_start_year = form.study_defn['futStrtYr']
@@ -276,7 +276,7 @@ def fetch_fut_end_year(form):
     # ===============================================================
     smmry_out_flag = False
     for subdir in subdirs_raw:
-        if verify_subdir(subdir):      # typical OSGB subdir = 'lat0002438_lon0023793_mu10090_s01'
+        if verify_subdir(subdir, version):      # typical lat/lon subdir = 'lat0002438_lon0023793_mu10090_s01'
             smmry_out_fn = join(sims_dir, subdir, 'SUMMARY.OUT')
             if isfile(smmry_out_fn):
                 smmry_out_flag = True
@@ -525,11 +525,11 @@ def aggregate_soil_data_to_csv(form):
     spec_csv.create_soil_results_file(run_mode)
     sims_dir = form.w_lbl_sims.text()
 
-    num_grid_cells = 0  # No. of grid cells have completed successfully
+    ngrid_cells = 0  # No. of grid cells have completed successfully
     failed = 0   # sims that failed to complete due to error
     skipped = 0  # sims that were skipped due to error
-    warning_count = 0   # No. of warnings
-    start_time = time()
+    warn_count = 0   # No. of warnings
+    strt_time = time()
 
     print('Gathering all simulation directories from ' + sims_dir + '...')
     for directory, subdirs_raw, files in walk(sims_dir):
@@ -547,9 +547,8 @@ def aggregate_soil_data_to_csv(form):
     del(subdirs_raw)
 
     print('Counting all manifest files...')
-    num_manifests = len(glob(normpath(sims_dir + '/manifest_lat*_lon*_mu*.txt')))
-
-    print('\nGathered {} simulation directories and counted {} manifest files...'.format(num_sims,num_manifests))
+    nmanifests = len(glob(normpath(sims_dir + '/manifest_lat*_lon*_mu*.txt')))
+    print('\nGathered {} simulation directories and counted {} manifest files...'.format(num_sims,nmanifests))
 
     # main loop
     # =========
@@ -577,9 +576,9 @@ def aggregate_soil_data_to_csv(form):
         area = spec_csv.process_soil_result(scenario, sim_dir, result_for_soil, iyear, plant_input, run_mode)
 
         total_area += area
-        num_grid_cells += 1
+        ngrid_cells += 1
 
-        last_time = update_progress_post(last_time, start_time, num_grid_cells, num_manifests, skipped, failed, warning_count)
+        last_time = update_progress_post(last_time, strt_time, ngrid_cells, nmanifests, skipped, failed, warn_count)
         sim_num += 1
         if sim_num > completed_max:
             print('\nCompleted maximum number of simulations {} - will terminate processing'.format(sim_num))
@@ -587,12 +586,13 @@ def aggregate_soil_data_to_csv(form):
 
     # close CSV file
     # ==============
+    last_time = update_progress_post(last_time, strt_time, ngrid_cells, nmanifests, skipped, failed, warn_count)
     for key in spec_csv.output_fhs:
         spec_csv.output_fhs[key].close()
 
     form.lgr.info('\nSimulations completed.')
 
-    last_time = update_progress_post(last_time, start_time, num_grid_cells, num_manifests, skipped, failed, warning_count)
+    last_time = update_progress_post(last_time, strt_time, ngrid_cells, nmanifests, skipped, failed, warn_count)
     mess = '\nAggregation of soil data completed.\tTotal area covered: {} km2'.format(round(total_area,2))
     print(mess)
     form.lgr.info(mess)
