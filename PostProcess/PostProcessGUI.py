@@ -32,7 +32,7 @@ from csv_to_raw_nc import csv_to_raw_netcdf
 from csv_to_co2e_nc import csv_to_co2e_netcdf
 from csv_to_coards_nc import csv_to_coards_netcdf
 from spec_utilities import trim_summaries
-from spec_check import check_spec_results
+from spec_check import check_spec_results, csv_to_csv_ireland
 
 STD_FLD_SIZE = 60
 STD_BTN_SIZE = 110
@@ -212,7 +212,15 @@ class Form(QWidget):
         w_lbl11.setToolTip('Each operation applies to selected simulation only')
         grid.addWidget(w_lbl11, irow, icol)
 
-        icol += 3
+        icol += 1
+        w_csv_to_csv = QPushButton('CSV to CSV')
+        helpText = 'Create subset from existing aggregate CSV files'
+        w_csv_to_csv.setToolTip(helpText)
+        w_csv_to_csv.setFixedWidth(STD_BTN_SIZE)
+        grid.addWidget(w_csv_to_csv, irow, icol)
+        w_csv_to_csv.clicked.connect(self.csvToCsvClicked)
+
+        icol += 1
         w_csv_to_crds = QPushButton('CSV to COARDS NCs')
         helpText = 'reads CSV result files and creates corresponding COARDS compliant NC files - \n' + \
                    'Cooperative Ocean/Atmosphere Research Data Service - \n' + \
@@ -446,6 +454,14 @@ class Form(QWidget):
 
     # ============= Unique operations ==========================
     #
+    def csvToCsvClicked(self):
+        """
+        C
+        """
+        csv_to_csv_ireland(self)
+
+        return
+
     def aggregToCsvClicked(self):
         """
         C

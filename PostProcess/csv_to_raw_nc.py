@@ -26,7 +26,7 @@ bad_fobj_key = 'bad_lines'
 # make sure you have the variable names in the same order as the conversion factors
 # result names (same in both folders), must match order of other lists (assume they have .txt suffix)
 #  'plant_C_inp':'kgC/ha/yr'}
-METRICS = list(['co2', 'no3', 'n2o', 'soc', 'npp'])
+METRICS = list(['ch4', 'co2', 'no3', 'n2o', 'soc', 'npp'])
 SOIL_METRICS = dict({'C_content': 'kgC/ha', 'bulk_dens': 'g/cm3', 'pH': 'pH', 'clay': '%', 'silt': '%', 'sand': '%'})
 
 LINE_LENGTH = 79

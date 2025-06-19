@@ -16,7 +16,7 @@ from os.path import splitext, isfile, join
 from os import remove
 import time
 from netCDF4 import Dataset
-from numpy import arange, float32
+from numpy import arange, float64
 from PyQt5.QtWidgets import QApplication
 
 from nc_low_level_fns import generate_mnthly_atimes
@@ -49,20 +49,20 @@ def create_co2e_nc_dset(form, metric_obj):
     resol = resolution
     resol_d2 = resol/2.0
 
-    ll_lon = resol*int(ll_lon/resol) - resol_d2
-    ll_lat = resol*int(ll_lat/resol) - resol_d2
+    ll_lon1 = round(ll_lon / resol) * resol - resol_d2
+    ll_lat1 = round(ll_lat / resol) * resol - resol_d2
 
     # Extend the upper right coords so that alons and alats arrays encompass data
     # ===========================================================================
-    ur_lon = resol*int(ur_lon/resol) + 2*resol + resol_d2
-    ur_lat = resol*int(ur_lat/resol) + 2*resol + resol_d2
+    ur_lon1 = round(ur_lon / resol) * resol + 2 * resol + resol_d2
+    ur_lat1 = round(ur_lat / resol) * resol + 2 * resol + resol_d2
 
-    bbox = list([ll_lon, ll_lat, ur_lon, ur_lat])
+    bbox = list([ll_lon1, ll_lat1, ur_lon1, ur_lat1])
 
     # build lat long arrays
     # =====================
-    alons = arange(ll_lon, ur_lon, resol, dtype=float32)
-    alats = arange(ll_lat, ur_lat, resol, dtype=float32)
+    alons = arange(ll_lon1, ur_lon1, resol, dtype=float64)
+    alats = arange(ll_lat1, ur_lat1, resol, dtype=float64)
     num_alons = len(alons)
     num_alats = len(alats)
     form.bbox_nc = bbox
@@ -106,7 +106,7 @@ def create_co2e_nc_dset(form, metric_obj):
     # create the variable (4 byte float in this case)
     # to create a netCDF variable, use the createVariable method of a Dataset (or Group) instance.
     # first argument is name of the variable, second is datatype, third is a tuple with the name (s) of the dimension(s).
-    # lats = nc_dset.createVariable('latitude',dtype('float32').char,('latitude',))
+    # lats = nc_dset.createVariable('latitude',dtype('float64').char,('latitude',))
     #
     lats = nc_dset.createVariable('latitude', 'f4', ('latitude',))
     lats.description = 'degrees of latitude North to South in ' + str(resol) + ' degree steps'

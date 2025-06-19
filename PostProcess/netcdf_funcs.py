@@ -16,7 +16,7 @@ from os.path import normpath, isfile, join
 from os import remove
 import time
 from netCDF4 import Dataset
-from numpy import arange, float32
+from numpy import arange, float64
 
 MISSING_VALUE = -999.0
 IMISS_VALUE = int(MISSING_VALUE)
@@ -56,8 +56,8 @@ def create_raw_nc_dset(form, metrics, soil_metrics):
 
     # build lat long arrays
     # =====================
-    alons = arange(ll_lon, ur_lon, resol, dtype=float32)
-    alats = arange(ll_lat, ur_lat, resol, dtype=float32)
+    alons = arange(ll_lon, ur_lon, resol, dtype=float64)
+    alats = arange(ll_lat, ur_lat, resol, dtype=float64)
     num_alons = len(alons)
     num_alats = len(alats)
     form.bbox_nc = bbox
@@ -111,7 +111,7 @@ def create_raw_nc_dset(form, metrics, soil_metrics):
     # create the variable (4 byte float in this case)
     # to create a netCDF variable, use the createVariable method of a Dataset (or Group) instance.
     # first argument is name of the variable, second is datatype, third is a tuple with the name (s) of the dimension(s).
-    # lats = nc_dset.createVariable('latitude',dtype('float32').char,('lat',))
+    # lats = nc_dset.createVariable('latitude',dtype('float64').char,('lat',))
     #
     lats = nc_dset.createVariable('latitude', 'f4', ('lat',))
     lats.units = 'degrees of latitude North to South in ' + str(resol) + ' degree steps'
